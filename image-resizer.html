@@ -1,0 +1,260 @@
+<div class="image-resizer" style="max-width:420px;margin:0 auto;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#f9f9f9;border-radius:12px;padding:20px;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+  <h2 style="text-align:center;color:#2c3e50;margin-bottom:20px;font-weight:600;">Image Resizer</h2>
+  <p style="text-align:center;color:#7f8c8d;font-size:14px;margin-bottom:20px;">Resize your images to any dimensions while maintaining quality</p>
+  
+  <!-- Upload Area -->
+  <div class="upload-area" id="drop-zone" style="border:2px dashed #bdc3c7;border-radius:8px;padding:30px;text-align:center;margin-bottom:20px;cursor:pointer;transition:all 0.3s;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3498db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:10px;">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+      <polyline points="17 8 12 3 7 8"></polyline>
+      <line x1="12" y1="3" x2="12" y2="15"></line>
+    </svg>
+    <p style="margin:0;color:#3498db;font-weight:500;">Drag & drop image or click to select</p>
+    <input type="file" id="upload" accept="image/*" style="display:none;">
+    <p id="file-info" style="margin-top:10px;font-size:12px;color:#95a5a6;">Supports JPG, PNG, WEBP, GIF</p>
+  </div>
+  
+  <!-- Resize Controls -->
+  <div class="controls" style="background:#fff;border-radius:8px;padding:15px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:15px;">
+      <div>
+        <label style="display:block;margin-bottom:5px;font-size:14px;font-weight:500;">Width (px)</label>
+        <input type="number" id="width" min="10" value="800" style="width:100%;padding:8px;border-radius:6px;border:1px solid #e0e0e0;">
+      </div>
+      <div>
+        <label style="display:block;margin-bottom:5px;font-size:14px;font-weight:500;">Height (px)</label>
+        <input type="number" id="height" min="10" value="600" style="width:100%;padding:8px;border-radius:6px;border:1px solid #e0e0e0;">
+      </div>
+    </div>
+    
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <input type="checkbox" id="keep-aspect" checked style="accent-color:#3498db;">
+      <label for="keep-aspect" style="font-size:14px;">Maintain aspect ratio</label>
+    </div>
+    
+    <div style="margin-bottom:10px;">
+      <label style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:14px;">
+        <span>Quality: <strong id="quality-value">80%</strong></span>
+        <span id="quality-percent" style="color:#3498db;">Good</span>
+      </label>
+      <input type="range" id="quality" min="1" max="100" value="80" style="width:100%;accent-color:#3498db;">
+    </div>
+  </div>
+  
+  <!-- Resize Button -->
+  <button id="resize-btn" style="width:100%;padding:12px;background:linear-gradient(to right,#3498db,#2ecc71);color:white;border:none;border-radius:6px;font-weight:600;cursor:pointer;transition:all 0.3s;margin-bottom:15px;">Resize Image</button>
+  
+  <!-- Results -->
+  <div id="results" style="display:none;">
+    <div style="display:flex;justify-content:space-between;background:#fff;border-radius:8px;padding:15px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+      <div>
+        <p style="margin:0 0 5px 0;font-size:12px;color:#95a5a6;">Original</p>
+        <p style="margin:0;font-weight:600;" id="original-size">0 KB</p>
+      </div>
+      <div style="text-align:center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3498db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </div>
+      <div>
+        <p style="margin:0 0 5px 0;font-size:12px;color:#95a5a6;">Resized</p>
+        <p style="margin:0;font-weight:600;color:#2ecc71;" id="resized-size">0 KB</p>
+      </div>
+    </div>
+    
+    <div id="preview" style="text-align:center;margin-bottom:15px;"></div>
+    
+    <a id="download" style="display:block;width:100%;padding:12px;background:#2ecc71;color:white;text-align:center;text-decoration:none;border-radius:6px;font-weight:600;transition:all 0.3s;">
+      Download Resized Image
+    </a>
+  </div>
+  
+  <!-- SEO Structured Data -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Image Resizer",
+      "description": "Free online tool to resize images to any dimensions while maintaining quality",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+  </script>
+  
+  <!-- JavaScript -->
+  <script>
+    // DOM Elements
+    const uploadInput = document.getElementById('upload');
+    const dropZone = document.getElementById('drop-zone');
+    const fileInfo = document.getElementById('file-info');
+    const widthInput = document.getElementById('width');
+    const heightInput = document.getElementById('height');
+    const keepAspectCheckbox = document.getElementById('keep-aspect');
+    const qualityInput = document.getElementById('quality');
+    const qualityValue = document.getElementById('quality-value');
+    const qualityPercent = document.getElementById('quality-percent');
+    const resizeBtn = document.getElementById('resize-btn');
+    const resultsDiv = document.getElementById('results');
+    const originalSize = document.getElementById('original-size');
+    const resizedSize = document.getElementById('resized-size');
+    const previewDiv = document.getElementById('preview');
+    const downloadLink = document.getElementById('download');
+    
+    // Current Image
+    let currentImage = null;
+    let originalAspectRatio = 1;
+    
+    // Event Listeners
+    dropZone.addEventListener('click', () => uploadInput.click());
+    uploadInput.addEventListener('change', handleFileSelect);
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.style.borderColor = '#3498db';
+      dropZone.style.backgroundColor = 'rgba(52, 152, 219, 0.1)';
+    });
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.style.borderColor = '#bdc3c7';
+      dropZone.style.backgroundColor = 'transparent';
+    });
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.style.borderColor = '#bdc3c7';
+      dropZone.style.backgroundColor = 'transparent';
+      if (e.dataTransfer.files.length) {
+        uploadInput.files = e.dataTransfer.files;
+        handleFileSelect();
+      }
+    });
+    
+    qualityInput.addEventListener('input', updateQuality);
+    widthInput.addEventListener('input', updateHeightIfAspectLocked);
+    heightInput.addEventListener('input', updateWidthIfAspectLocked);
+    resizeBtn.addEventListener('click', resizeImage);
+    
+    // Initialize
+    updateQuality();
+    
+    // Functions
+    function handleFileSelect() {
+      if (uploadInput.files.length) {
+        currentImage = uploadInput.files[0];
+        fileInfo.textContent = `${currentImage.name} (${formatBytes(currentImage.size)})`;
+        fileInfo.style.color = '#2c3e50';
+        resultsDiv.style.display = 'none';
+        
+        // Load image to get dimensions
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = new Image();
+          img.onload = function() {
+            originalAspectRatio = img.width / img.height;
+            widthInput.value = img.width;
+            heightInput.value = img.height;
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(currentImage);
+      }
+    }
+    
+    function updateQuality() {
+      const value = qualityInput.value;
+      qualityValue.textContent = `${value}%`;
+      
+      if (value >= 80) qualityPercent.textContent = 'High';
+      else if (value >= 50) qualityPercent.textContent = 'Good';
+      else if (value >= 30) qualityPercent.textContent = 'Medium';
+      else qualityPercent.textContent = 'Low';
+    }
+    
+    function updateHeightIfAspectLocked() {
+      if (keepAspectCheckbox.checked) {
+        heightInput.value = Math.round(widthInput.value / originalAspectRatio);
+      }
+    }
+    
+    function updateWidthIfAspectLocked() {
+      if (keepAspectCheckbox.checked) {
+        widthInput.value = Math.round(heightInput.value * originalAspectRatio);
+      }
+    }
+    
+    function resizeImage() {
+      if (!currentImage) {
+        fileInfo.textContent = 'Please select an image first';
+        fileInfo.style.color = '#e74c3c';
+        return;
+      }
+      
+      const width = parseInt(widthInput.value);
+      const height = parseInt(heightInput.value);
+      const quality = parseInt(qualityInput.value) / 100;
+      
+      if (width < 10 || height < 10) {
+        alert('Minimum size is 10px');
+        return;
+      }
+      
+      resizeBtn.disabled = true;
+      resizeBtn.textContent = 'Resizing...';
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          canvas.toBlob(function(blob) {
+            const url = URL.createObjectURL(blob);
+            
+            // Update results
+            originalSize.textContent = formatBytes(currentImage.size);
+            resizedSize.textContent = formatBytes(blob.size);
+            
+            // Show preview
+            previewDiv.innerHTML = `
+              <img src="${url}" style="max-width:100%;max-height:300px;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+              <p style="margin-top:8px;font-size:12px;color:#7f8c8d;">Dimensions: ${width}×${height}px</p>
+            `;
+            
+            // Update download link
+            const fileName = currentImage.name.replace(/\.[^/.]+$/, '');
+            downloadLink.href = url;
+            downloadLink.download = `${fileName}_${width}x${height}.${currentImage.name.split('.').pop()}`;
+            
+            // Show results
+            resultsDiv.style.display = 'block';
+            
+            // Reset button
+            resizeBtn.disabled = false;
+            resizeBtn.textContent = 'Resize Image';
+            
+            // Scroll to results
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, currentImage.type, quality);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(currentImage);
+    }
+    
+    function formatBytes(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+  </script>
+</div>
