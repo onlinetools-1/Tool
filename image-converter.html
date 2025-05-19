@@ -1,0 +1,277 @@
+<div class="image-converter" style="max-width:420px;margin:0 auto;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#f9f9f9;border-radius:12px;padding:20px;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+  <h2 style="text-align:center;color:#2c3e50;margin-bottom:20px;font-weight:600;">Image Converter</h2>
+  <p style="text-align:center;color:#7f8c8d;font-size:14px;margin-bottom:20px;">Convert between JPG, PNG, WEBP, GIF formats</p>
+  
+  <div class="upload-area" id="drop-zone" style="border:2px dashed #bdc3c7;border-radius:8px;padding:30px;text-align:center;margin-bottom:20px;cursor:pointer;transition:all 0.3s;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3498db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:10px;">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+      <polyline points="17 8 12 3 7 8"></polyline>
+      <line x1="12" y1="3" x2="12" y2="15"></line>
+    </svg>
+    <p style="margin:0;color:#3498db;font-weight:500;">Drag & drop image or click to select</p>
+    <input type="file" id="upload" accept="image/*" style="display:none;">
+    <p id="file-info" style="margin-top:10px;font-size:12px;color:#95a5a6;"></p>
+  </div>
+  
+  <div class="controls" style="background:#fff;border-radius:8px;padding:15px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+    <div style="margin-bottom:15px;">
+      <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:500;">Output Format</label>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+        <button data-format="jpg" class="format-btn active" style="padding:8px;border-radius:6px;border:1px solid #3498db;background:#3498db;color:white;cursor:pointer;">JPG</button>
+        <button data-format="png" class="format-btn" style="padding:8px;border-radius:6px;border:1px solid #e0e0e0;background:white;cursor:pointer;">PNG</button>
+        <button data-format="webp" class="format-btn" style="padding:8px;border-radius:6px;border:1px solid #e0e0e0;background:white;cursor:pointer;">WEBP</button>
+        <button data-format="gif" class="format-btn" style="padding:8px;border-radius:6px;border:1px solid #e0e0e0;background:white;cursor:pointer;">GIF</button>
+      </div>
+    </div>
+    
+    <div id="quality-control" style="margin-bottom:15px;">
+      <label style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:14px;">
+        <span>Quality: <strong id="quality-value">80%</strong></span>
+        <span id="quality-percent" style="color:#3498db;">Good</span>
+      </label>
+      <input type="range" id="quality" min="1" max="100" value="80" style="width:100%;accent-color:#3498db;">
+    </div>
+    
+    <div>
+      <label style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:14px;">
+        <span>Max Width: <strong id="width-value">Original</strong></span>
+      </label>
+      <input type="range" id="width" min="100" max="2000" value="0" step="50" style="width:100%;accent-color:#3498db;">
+    </div>
+  </div>
+  
+  <button id="convert" style="width:100%;padding:12px;background:linear-gradient(to right,#3498db,#2ecc71);color:white;border:none;border-radius:6px;font-weight:600;cursor:pointer;transition:all 0.3s;margin-bottom:15px;">Convert Image</button>
+  
+  <div id="results" style="display:none;">
+    <div style="display:flex;justify-content:space-between;background:#fff;border-radius:8px;padding:15px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+      <div>
+        <p style="margin:0 0 5px 0;font-size:12px;color:#95a5a6;">Original</p>
+        <p style="margin:0;font-weight:600;" id="original-size">0 KB</p>
+      </div>
+      <div style="text-align:center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3498db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </div>
+      <div>
+        <p style="margin:0 0 5px 0;font-size:12px;color:#95a5a6;">Converted</p>
+        <p style="margin:0;font-weight:600;color:#2ecc71;" id="converted-size">0 KB</p>
+      </div>
+    </div>
+    
+    <div id="preview" style="text-align:center;margin-bottom:15px;"></div>
+    
+    <a id="download" style="display:block;width:100%;padding:12px;background:#2ecc71;color:white;text-align:center;text-decoration:none;border-radius:6px;font-weight:600;transition:all 0.3s;">
+      Download Converted Image
+    </a>
+  </div>
+  
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Image Converter",
+      "description": "Free online tool to convert images between JPG, PNG, WEBP, and GIF formats",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+  </script>
+  
+  <script>
+    // DOM elements
+    const uploadInput = document.getElementById('upload');
+    const dropZone = document.getElementById('drop-zone');
+    const fileInfo = document.getElementById('file-info');
+    const formatBtns = document.querySelectorAll('.format-btn');
+    const qualityInput = document.getElementById('quality');
+    const qualityValue = document.getElementById('quality-value');
+    const qualityPercent = document.getElementById('quality-percent');
+    const widthInput = document.getElementById('width');
+    const widthValue = document.getElementById('width-value');
+    const convertBtn = document.getElementById('convert');
+    const resultsDiv = document.getElementById('results');
+    const originalSize = document.getElementById('original-size');
+    const convertedSize = document.getElementById('converted-size');
+    const previewDiv = document.getElementById('preview');
+    const downloadLink = document.getElementById('download');
+    const qualityControl = document.getElementById('quality-control');
+    
+    // Current settings
+    let currentFormat = 'jpg';
+    let currentFile = null;
+    
+    // Event listeners
+    dropZone.addEventListener('click', () => uploadInput.click());
+    uploadInput.addEventListener('change', handleFileSelect);
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.style.borderColor = '#3498db';
+      dropZone.style.backgroundColor = 'rgba(52, 152, 219, 0.1)';
+    });
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.style.borderColor = '#bdc3c7';
+      dropZone.style.backgroundColor = 'transparent';
+    });
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.style.borderColor = '#bdc3c7';
+      dropZone.style.backgroundColor = 'transparent';
+      if (e.dataTransfer.files.length) {
+        uploadInput.files = e.dataTransfer.files;
+        handleFileSelect();
+      }
+    });
+    
+    formatBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        formatBtns.forEach(b => {
+          b.style.border = '1px solid #e0e0e0';
+          b.style.background = 'white';
+          b.style.color = 'inherit';
+        });
+        btn.style.border = '1px solid #3498db';
+        btn.style.background = '#3498db';
+        btn.style.color = 'white';
+        currentFormat = btn.dataset.format;
+        
+        // Hide quality for PNG and GIF (lossless formats)
+        if (currentFormat === 'png' || currentFormat === 'gif') {
+          qualityControl.style.display = 'none';
+        } else {
+          qualityControl.style.display = 'block';
+        }
+      });
+    });
+    
+    qualityInput.addEventListener('input', updateQuality);
+    widthInput.addEventListener('input', updateWidth);
+    convertBtn.addEventListener('click', convertImage);
+    
+    // Initialize
+    updateQuality();
+    updateWidth();
+    
+    // Functions
+    function handleFileSelect() {
+      if (uploadInput.files.length) {
+        currentFile = uploadInput.files[0];
+        fileInfo.textContent = `${currentFile.name} (${formatBytes(currentFile.size)})`;
+        fileInfo.style.color = '#2c3e50';
+        resultsDiv.style.display = 'none';
+      }
+    }
+    
+    function updateQuality() {
+      const value = qualityInput.value;
+      qualityValue.textContent = `${value}%`;
+      
+      // Update quality description
+      if (value >= 80) qualityPercent.textContent = 'High';
+      else if (value >= 50) qualityPercent.textContent = 'Good';
+      else if (value >= 30) qualityPercent.textContent = 'Medium';
+      else qualityPercent.textContent = 'Low';
+    }
+    
+    function updateWidth() {
+      const value = widthInput.value;
+      widthValue.textContent = value === '0' ? 'Original' : `${value}px`;
+    }
+    
+    function convertImage() {
+      if (!currentFile) {
+        fileInfo.textContent = 'Please select an image first';
+        fileInfo.style.color = '#e74c3c';
+        return;
+      }
+      
+      const quality = parseInt(qualityInput.value) / 100;
+      const maxWidth = parseInt(widthInput.value) || null;
+      
+      convertBtn.disabled = true;
+      convertBtn.textContent = 'Converting...';
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          
+          if (maxWidth && width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          
+          const ctx = canvas.getContext('2d');
+          
+          // Fill with white background for JPG conversion
+          if (currentFormat === 'jpg') {
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+          }
+          
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Determine MIME type
+          let mimeType;
+          switch(currentFormat) {
+            case 'jpg': mimeType = 'image/jpeg'; break;
+            case 'png': mimeType = 'image/png'; break;
+            case 'webp': mimeType = 'image/webp'; break;
+            case 'gif': mimeType = 'image/gif'; break;
+            default: mimeType = 'image/jpeg';
+          }
+          
+          canvas.toBlob(function(blob) {
+            const url = URL.createObjectURL(blob);
+            
+            // Update results
+            originalSize.textContent = formatBytes(currentFile.size);
+            convertedSize.textContent = formatBytes(blob.size);
+            
+            // Show preview
+            previewDiv.innerHTML = `
+              <img src="${url}" style="max-width:100%;max-height:300px;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+              <p style="margin-top:8px;font-size:12px;color:#7f8c8d;">Format: ${currentFormat.toUpperCase()} | Dimensions: ${width}×${height}px</p>
+            `;
+            
+            // Update download link
+            const fileName = currentFile.name.replace(/\.[^/.]+$/, '');
+            downloadLink.href = url;
+            downloadLink.download = `${fileName}.${currentFormat}`;
+            
+            // Show results
+            resultsDiv.style.display = 'block';
+            
+            // Reset button
+            convertBtn.disabled = false;
+            convertBtn.textContent = 'Convert Image';
+            
+            // Scroll to results
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, mimeType, currentFormat === 'png' || currentFormat === 'gif' ? undefined : quality);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(currentFile);
+    }
+    
+    function formatBytes(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+  </script>
+</div>
